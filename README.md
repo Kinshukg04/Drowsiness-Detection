@@ -1,6 +1,6 @@
 # Drowsiness Detection
 
-This code uses Faster R-CNN structure(Resnet-101).
+This code uses SVM model.
 
 Limitations:
             
