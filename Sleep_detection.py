@@ -89,8 +89,9 @@ def jaw_aspect_ratio(jaw,left_eyebrow,right_eyebrow):
 
 
 
-
-
+blink_time=0
+blinks_time=0
+blinke_time=0
 
 
 
@@ -209,13 +210,31 @@ while True:
 
         mouth = shape[mStart: mEnd]
 
-        mouthEAR = mouth_aspect_ratio(mouth)
-
         jaw=shape[jStart:jEnd]
+
         left_eyebrow=shape[bStart:bEnd]
         right_eyebrow=shape[cStart:cEnd]
 
-        jawEAR= jaw_aspect_ratio(jaw,left_eyebrow,right_eyebrow)
+        if(len(jaw)!=1):
+
+            mouthEAR = mouth_aspect_ratio(mouth)
+            mouthHull = cv2.convexHull(mouth)
+            cv2.drawContours(frame, [mouthHull], -1, (0, 255, 0), 1)
+
+
+
+            left_eyebrow=shape[bStart:bEnd]
+            right_eyebrow=shape[cStart:cEnd]
+
+            jawEAR= jaw_aspect_ratio(jaw,left_eyebrow,right_eyebrow)
+
+
+
+
+
+            jawHull=cv2.convexHull(jaw)
+
+            cv2.drawContours(frame, [jawHull], -1   , (0, 255, 0), 1)
 
 
 
@@ -225,21 +244,26 @@ while True:
 
         rightEyeHull = cv2.convexHull(rightEye)
 
-        mouthHull = cv2.convexHull(mouth)
+        #mouthHull = cv2.convexHull(mouth)
 
-        jawHull=cv2.convexHull(jaw)
+    #    jawHull=cv2.convexHull(jaw)
+
+        left_eyebrowHull=cv2.convexHull(left_eyebrow)
+        right_eyebrowHull=cv2.convexHull(right_eyebrow)
 
         cv2.drawContours(frame, [leftEyeHull], -1, (0, 255, 0), 1)
 
         cv2.drawContours(frame, [rightEyeHull], -1, (0, 255, 0), 1)
 
-        cv2.drawContours(frame, [mouthHull], -1, (0, 255, 0), 1)
+        #cv2.drawContours(frame, [mouthHull], -1, (0, 255, 0), 1)
 
-        cv2.drawContours(frame, [jawHull], -1   , (0, 255, 0), 1)
+#        cv2.drawContours(frame, [jawHull], -1   , (0, 255, 0), 1)
+
+        cv2.drawContours(frame, [right_eyebrowHull], -1, (0, 255, 0), 1)
+        cv2.drawContours(frame, [left_eyebrowHull], -1, (0, 255, 0), 1)
 
 
-
-        if ((mouthEAR > 30) or (jawEAR > 120)):
+        if ((mouthEAR > 30) or (jawEAR > 140)):
 
             count_mouth += 1
 
@@ -249,7 +273,7 @@ while True:
 
                     print("You are yawning")
 
-                    #time.sleep(2.0)
+                    #time.sleep(4.0)
 
                     yawn_flag = 1
 
@@ -279,13 +303,21 @@ while True:
 
         if ear <  EYE_AR_THRESH:
 
+            blinks_time=time.time()
+
             counter += 1
+            if(ear> EYE_AR_THRESH):
+
+                blinke_time=time.time()
+                blink_time=blinks_time-blinke_time
 
 
 
-            if counter >= EYE_AR_CONSEC_FRAMES:
 
-                if sleep_flag < 0:
+            if (counter >= EYE_AR_CONSEC_FRAMES)   :
+                #blinks_time=0
+
+                if (sleep_flag < 0)  :
 
                     print("You are sleeping.")
                     #time.sleep(2.0)
@@ -342,7 +374,11 @@ while True:
 
 			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-        if total+total_yawn > 4:
+        cv2.putText(frame, "JAR: {:.2f}".format(jawEAR), (200, 30),
+
+    		cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+        if (total+total_yawn > 4)  :
 
             print("playing sound")
 
