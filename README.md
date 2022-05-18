@@ -1,6 +1,5 @@
 # Drowsiness Detection
 
-This code uses SVM model.
 
 Limitations:
             
